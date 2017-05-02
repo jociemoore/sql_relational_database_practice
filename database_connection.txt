@@ -1,0 +1,5 @@
+------------
+Question #1
+------------
+
+You can call the map method directly on an instance of PG::Result because PG::Result includes Enumerable methods including map. 
