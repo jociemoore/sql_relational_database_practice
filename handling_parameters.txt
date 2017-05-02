@@ -1,0 +1,29 @@
+------------
+Question #1
+------------
+
+If you use 2 placeholders and only one in the Array of values, then you will get the following error:
+
+PG::ProtocolViolation: ERROR:  bind message supplies 1 parameters, but prepared statement "" requires 2
+
+  from (irb):11:in `exec_params'
+  from (irb):11
+  from /Users/jocie/.rvm/rubies/ruby-2.2.0/bin/irb:11:in `<main>'
+
+------------
+Question #2
+------------
+
+  CONNECTION.exec_params("INSERT INTO expenses (amount, memo, created_on)
+  VALUES ($1, $2, NOW());", [cost, description])
+
+------------
+Question #3
+------------
+
+$ ./expense add 0.01 "', '2015-01-01'); DROP TABLE expenses;
+
+Now when running the malicious script, the input is sanitized and enter into the table as text
+
+ 13 | 2017-04-16 |       0.01 | ', '2015-01-01'); DROP TABLE expenses; --
+
