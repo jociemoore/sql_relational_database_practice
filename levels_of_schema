@@ -1,0 +1,24 @@
+------------
+Question #1
+------------
+
+The three levels of schema are 1)conceptual 2)logical 3)physical.
+
+------------
+Question #2
+------------
+
+A Conceptual Schema is a high level design focused on identifying entities and their relationships.
+
+------------
+Question #3
+------------
+
+A Physical Schema is database implementation low-level database specific design focused on implementation.
+
+------------
+Question #4
+------------
+
+The three types of relationships that can be shown in a database diagram are 1)one-to-one 2)one-to-many 3)many-to-many.
+
