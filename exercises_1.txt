@@ -1,0 +1,59 @@
+------------
+Question #1
+------------
+
+SQL is both a special purpose language and a declarative language. It is considered a special purpose language because it is only used for interacting with relational databases, more specifically to manipulate teh structure and values of the datasets stored in relational databases. It is a considered a declarative language because it describes *what* needs to be done but not *how* to accomplish this task, which means that the same query can be executed differently on an identical dataset. 
+
+
+------------
+Question #2
+------------
+
+The 3 sublanguages of SQL are...
+1. Data Definition Language (DDL)
+      => creates and modifies schema
+      => Example: CREATE, DROP, ALTER, ADD COLUMN
+2. Data Manipulation Language (DML)
+      => retrieve and modify data with relations
+      => Example: SELECT, INSERT, UPDATE, DELETE
+3. Data Control Language (DCL) 
+      => controls rights and access 
+      => Example: GRANT
+
+------------
+Question #3
+------------
+
+'canoe'
+'a long road'
+E'weren\'t' or 'weren''t' or $$weren't$$
+'No way!"'
+
+------------
+Question #4
+------------
+
+The string concatenation operator is ||.
+Example: 'Post' || 'greSQL' = PostgreSQL
+
+------------
+Question #5
+------------
+
+Convert string to lowercase: lower(string)
+Example: SELECT lower('WOW');  => wow
+
+------------
+Question #6
+------------
+
+t => true
+f => false
+
+------------
+Question #7
+------------
+
+Surface area of a sphere with a radius of 26.3:
+SELECT round((4*pi()) * power(26.3, 2.0)) => 8692
+

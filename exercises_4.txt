@@ -1,0 +1,90 @@
+------------
+Question #1
+------------
+
+a. 
+When imported, the SQL statements within the file are executed.
+- Deletes a table 'films' if it exists,
+- Creates a table 'films
+- Inserts title, year, genre values for 3 rows
+
+b. 
+NOTICE:  table "films" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+c. The first line DROP TABLE IF EXISTS public.films; deletes a table called 'films' if it exists.
+
+
+------------
+Question #2
+------------
+
+SELECT * FROM films;
+
+------------
+Question #3
+------------
+
+SELECT * FROM films WHERE char_length(title) < 12;
+
+------------
+Question #4
+------------
+
+ALTER TABLE films ADD COLUMN directors VARCHAR(50);
+
+ALTER TABLE films ADD COLUMN duration INTEGER;
+
+------------
+Question #5
+------------
+
+UPDATE films SET directors = 'John McTiernan' WHERE title = 'Die Hard';
+
+UPDATE films SET directors = 'Michael Curtiz' WHERE title = 'Casablanca';
+
+UPDATE films SET directors = 'Francis Ford Coppola' WHERE title = 'The Conversation;
+
+UPDATE films SET duration = 132 WHERE title = 'Die Hard';
+
+UPDATE films SET duration = 102 WHERE title = 'Casablanca';
+
+UPDATE films SET duration = 113 WHERE title = 'The Conversation;
+
+------------
+Question #6
+------------
+
+INSERT INTO films
+VALUES ('1984', 1956, 'scifi', 'Michael Anderson', 90);
+
+INSERT INTO films
+VALUES ('Tinker Tailor Soldier Spy', 2011, 'espionage', 'Thomas Alfredson', 127);
+
+INSERT INTO films
+VALUES ('The Birdcage', 1996, 'comedy', 'Mike Nichols', 118);
+
+
+------------
+Question #7
+------------
+
+SELECT title, (2017 - year) AS age FROM films ORDER BY age ASC;
+
+EXTRACT(YEAR FROM ... )
+
+------------
+Question #8
+------------
+
+SELECT title, duration FROM films WHERE duration > 120 ORDER BY duration DESC; 
+
+------------
+Question #9
+------------
+
+SELECT title FROM films ORDER BY duration DESC LIMIT 1;
