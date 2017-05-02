@@ -1,0 +1,133 @@
+------------
+Question #1
+------------
+
+createdb extrasolar
+psql -d extrasolar
+
+CREATE TABLE stars (
+id SERIAL PRIMARY KEY,
+name VARCHAR(25) NOT NULL UNIQUE,
+distance INTEGER NOT NULL CHECK (distance > 0),
+spectral_type CHAR(1),
+companions INTEGER NOT NULL CHECK (companions >= 0)
+);
+
+CREATE TABLE planets (
+extrasolar(# id SERIAL PRIMARY KEY,
+extrasolar(# designation CHAR(1),
+extrasolar(# mass INTEGER
+extrasolar(# );
+
+
+------------
+Question #2
+------------
+
+ALTER TABLE planets ADD COLUMN star_id INTEGER NOT NULL REFERENCES stars(id);
+
+------------
+Question #3
+------------
+
+ALTER TABLE stars ALTER COLUMN name TYPE VARCHAR(50);
+
+--------------------
+Further Exploration
+--------------------
+
+=> altering type to be more accommodating for characters after entering data works without issue.
+
+------------
+Question #4
+------------
+
+ALTER TABLE stars ALTER COLUMN distance TYPE NUMERIC;
+
+--------------------
+Further Exploration
+--------------------
+
+=> altering type to be more specific for decimal values after entering data works without issue.
+
+------------
+Question #5
+------------
+
+ALTER TABLE stars ALTER COLUMN spectral_type SET NOT NULL;
+ALTER TABLE stars ADD CONSTRAINT spectral_type_check CHECK (spectral_type ~= '[OBAFGKM]');
+
+OR 
+
+ALTER TABLE stars ADD CHECK (spectral_type IN ('O', 'B', 'A', 'F', 'G', 'K', 'M')),
+ALTER COLUMN spectral_type SET NOT NULL;
+
+--------------------
+Further Exploration
+--------------------
+
+=> Trying to alter the table not congruent with previously entered data, throws an error message for the last non-matching constraint.
+
+ERROR:  column "spectral_type" contains null values
+
+------------
+Question #6
+------------
+
+ALTER TABLE stars DROP CONSTRAINT spectral_type_check
+CREATE TYPE spectral_type_check AS ENUM ('O','B','A','F','G','K','M');
+ALTER TABLE stars 
+ALTER COLUMN spectral_type TYPE spectral_type_check
+USING spectral_type::spectral_type_check;
+
+------------
+Question #7
+------------
+
+ALTER TABLE planets
+ALTER COLUMN mass TYPE numeric,
+ALTER COLUMN mass SET NOT NULL;
+ALTER TABLE planets 
+ADD CONSTRAINT positive_mass_check CHECK (mass > 0);
+ALTER TABLE planets 
+ALTER COLUMN designation SET NOT NULL;
+
+------------
+Question #8
+------------
+
+ALTER TABLE planets ADD COLUMN semi_major_axis NUMERIC NOT NULL;
+
+--------------------
+Further Exploration
+--------------------
+
+=> First...
+ALTER TABLE planets
+ADD COLUMN semi_major_axis NUMERIC;
+
+Then...
+UPDATE planets SET semi_major_axis = 0.04 WHERE star_id = 7;
+UPDATE planets SET semi_major_axis = 40 WHERE star_id = 8;
+
+Lastly...
+ALTER TABLE planets ALTER COLUMN semi_major_axis SET NOT NULL;
+
+------------
+Question 9 
+------------
+
+CREATE TABLE moons (
+id SERIAL PRIMARY KEY,
+designation INTEGER NOT NULL,
+semi_major_axis NUMERIC CHECK (semi_major_axis > 0),
+mass NUMERIC CHECK (mass > 0),
+planet_id INTEGER NOT_NULL REFERENCES planets(id) 
+);
+
+------------
+Question #10
+------------
+
+\c jocie
+DROP DATABASE extrasolar;

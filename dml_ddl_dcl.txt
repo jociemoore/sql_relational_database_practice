@@ -1,0 +1,90 @@
+------------
+Question #1
+------------
+
+The Data Control Language (DCL) component of SQL is used to control access to a database; it is responsible for defining the rights and roles granted to individual users. Common SQL DCL statements include: GRANT, REVOKE
+
+The Data Definition Language (DDL) component of SQL is used to create and modify the schema. Common SQL DDL statements include: CREATE, DROP, ALTER, ADD COLUMN.
+
+The Data Manipulation Language (DML) component of SQL is used to retrieve and modify data. Common SQL DML statements include: SELECT, INSERT INTO, UPDATE, DELETE.
+
+------------
+Question #2
+------------
+
+SELECT column_name FROM my_table;
+
+The above statement uses the DML component of SQL because its retrieving data.
+
+------------
+Question #3
+------------
+
+CREATE TABLE things (
+  id serial PRIMARY KEY,
+  item text NOT NULL UNIQUE,
+  material text NOT NULL
+);
+
+The above statement uses the DDL component of SQL because its creating a new structure or table to hold the data for "things".
+
+------------
+Question #4
+------------
+
+ALTER TABLE things
+DROP CONSTRAINT things_item_key;
+
+The above statements use the DDL component of SQL because they alter the structure of the table or the data contraint attribute.
+
+------------
+Question #5
+------------
+
+INSERT INTO things VALUES (3, 'Scissors', 'Metal');
+
+The above statement uses the DML component of SQL because it adds an addition data point and therefore modifies the data set.
+
+------------
+Question #6
+------------
+
+UPDATE things
+SET material = 'plastic'
+WHERE item = 'Cup';
+
+The above statements use the DML component of SQL because they modify the value in the material column for the 'Cup' item.
+
+------------
+Question #7
+------------
+
+\d things
+
+None -- its a psql command.
+
+------------
+Question #8
+------------
+
+DELETE FROM things WHERE item = 'Cup';
+
+The above statement uses the DML component of SQL because it deletes a data point and therefore alters the data set.
+
+------------
+Question #9
+------------
+
+DROP DATABASE xyzzy;
+
+The above statement uses the DML and DDL components of SQL because it deletes the data and the schema within the xyzzy database.
+
+------------
+Question #10
+------------
+
+CREATE SEQUENCE part_number_sequence;
+
+The above statement uses the DDL component of SQL because it is creating a new data definition.
+
+
