@@ -1,0 +1,211 @@
+------------
+Question #1
+------------
+
+createdb sequel-single-table
+
+------------
+Question #2
+------------
+
+pry
+require "pg"
+DB = Sequel.connect('postgres://localhost/sequel-single-table')
+
+------------
+Question #3
+------------
+
+DB.create_table(:people) do
+  primary_key :id
+  String :name, :null=>true
+  Integer :age, :null=>true
+  String :occupation
+  constraint(:age_positive){age > 0}
+end
+
+------------
+Question #4
+------------
+
+DB.tables
+
+------------
+Question #5
+------------
+
+DB.schema(:people)
+
+------------
+Question #6
+------------
+
+people = DB[:people]
+
+people.insert(:name=>'Abby', :age=>34, :occupation=>'biologist')
+people.insert(:name=>'Mu''nisah', :age=>26)
+people.insert(:name=>'Mirabelle', :age=>40, :occupation=>'contractor')
+
+------------
+Question #7
+------------
+
+people[:id => 2]
+=> {:id=>2, :name=>"Munisah", :age=>26, :occupation=>nil}
+
+second_row = people.where(:id => 2)
+second_row.to_a
+=> [{:id=>2, :name=>"Munisah", :age=>26, :occupation=>nil}]
+
+two = DB.fetch("SELECT * FROM people WHERE id = 2")
+=> [{:id=>2, :name=>"Munisah", :age=>26, :occupation=>nil}]
+
+ANSWER:
+people.where(age: 26).first
+people.where{ age < 30 }.first
+people.where { |p| p.age < 30 }.first
+
+------------
+Question #8
+------------
+
+Sequel::Dataset#first ==> returns a hash
+
+------------
+Question #9
+------------
+
+Sequel::Dataset#all ==> returns an array of hashes
+
+------------
+Question #10
+------------
+
+DB.create_table(:birds) do
+  primary_key :id
+  String :name, :null=>false
+  Float :length, :null=>false
+  Float :wingspan, :null=>false
+  String :family, :null=>false
+  FalseClass :extinct, :null=>false
+end
+
+------------
+Question #11
+------------
+
+birds = DB[:birds]
+
+birds.insert(:name=>'Spotted Towhee', :length=>21.6, :wingspan=>26.7,:family=>'Emberizidae', :extinct=>false)
+birds.insert(:name=>'American Robin', :length=>25.5, :wingspan=>36.0, :family=>'Turdidae', :extinct=>false)
+birds.insert(:name=>'Greater Koa Finch', :length=>19.0, :wingspan=>24.0, :family=>'Fringillidae', :extinct=>true)
+birds.insert(:name=>'Carolina Parakeet', :length=>33.0, :wingspan=>55.8, :family=>'Psittacidae', :extinct=>true)
+birds.insert(:name=>'Common Kestral', :length=>35.5, :wingspan=>73.5, :family=>'Falconidae', :extinct=>false)
+
+------------
+Question #12
+------------
+
+birds.each{|row| p row}
+
+------------
+Question #13
+------------
+
+RUBY
+longest = birds.select(:name, :family).where(:extinct=>false).reverse_order(:length)
+p longest.to_a
+
+SEQUEL 
+longest = birds.select(:name, :family).where(:extinct=>false).order(Sequel.desc(:length)).all
+p longest.to_a
+
+------------
+Question #14
+------------
+
+DB.fetch("SELECT name, family FROM birds WHERE extinct = false ORDER BY length DESC") do |row|
+  puts row
+end
+
+ANSWER:
+longest = birds.select(:name, :family).where(:extinct=>false).order(Sequel.desc(:length)).sql
+p longest.to_a
+
+------------
+Question #15
+------------
+
+stats = DB[:birds].select{min(:wingspan)}.select_append{max(:wingspan)}.select_append{avg(:wingspan)}
+p stats.to_a
+
+ANSWER:
+stats = DB[:birds].select do
+  [avg(wingspan), min(wingspan), max(wingspan)]
+end.first
+
+------------
+Question #16
+------------
+
+DB.create_table(:menu_items) do
+  primary_key :id
+  String :item, :null=>false, :unique=>true
+  Integer :prep_time, :null=>false
+  Numeric :ingredient_cost, :size=>[4,2], :null=>false
+  Integer :sales, :null=>false
+  Numeric :menu_price, :size=>[4,2], :null=>false
+end
+
+------------
+Question #17
+------------
+
+menu = DB[:menu_items]
+
+menu.insert(:item=>'omelette', :prep_time=>10, :ingredient_cost=>1.50, :sales=>182, :menu_price=>7.99)
+menu.insert(:item=>'tacos', :prep_time=>5, :ingredient_cost=>2.00, :sales=>254, :menu_price=>8.99)
+menu.insert(:item=>'oatmeal', :prep_time=>1, :ingredient_cost=>0.50, :sales=>79, :menu_price=>5.99)
+
+------------
+Question #18
+------------
+
+FIRST-GO:
+menu.select(:item).select_append(Sequel.as((Sequel[:sales] - (Sequel[:sales] / Sequel[:menu_price] * Sequel[:ingredient_cost]).cast(:integer)), :profit)).order(Sequel[:profit].desc).first
+
+REFACTORED:
+menu.select {[
+    (:item), 
+    Sequel.as((sales - (sales / menu_price) * ingredient_cost).cast(:integer), :profit)
+]}.reverse_order(:profit).first
+
+ANSWER:
+menu.select {[
+    item, 
+    Sequel.as((menu_price - ingredient_cost), :profit)
+]}.reverse_order(:profit).first
+
+------------
+Question #19
+------------
+
+menu.select {[
+    item, 
+    Sequel.as((menu_price - ingredient_cost), :profit)
+]}.reverse_order(:profit).sql
+
+------------
+Question #20
+------------
+
+menu.select {[
+    item, 
+    Sequel.as((menu_price - ingredient_cost).cast(:float), :profit)
+]}.reverse_order(:profit).first
+
+------------
+Question #21
+------------
+
+See query.rb
