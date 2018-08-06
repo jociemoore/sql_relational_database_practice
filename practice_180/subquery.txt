@@ -1,0 +1,294 @@
+------------
+Question #1
+------------
+
+createdb auction
+psql -d auction
+
+CREATE TABLE bidders (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE items (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  initial_price NUMERIC(6,2) NOT NULL,
+  sales_price NUMERIC(6,2)
+);
+
+CREATE TABLE bids (
+  id SERIAL PRIMARY KEY,
+  bidder_id INTEGER NOT NULL REFERENCES bidders(id) 
+    ON DELETE CASCADE,
+  item_id INTEGER NOT NULL REFERENCES items(id) 
+    ON DELETE CASCADE,
+  amount NUMERIC(6,2) NOT NULL
+);
+
+CREATE INDEX Idx_bidder_item ON bids(bidder_id, item_id);
+
+COPY bidders FROM '~/launch_school/course_180/practice/bidders.csv' CSV HEADER;
+
+COPY items FROM '~/launch_school/course_180/practice/items.csv' CSV HEADER;
+
+COPY bids FROM '~/launch_school/course_180/practice/bids.csv' CSV HEADER;
+
+-----
+
+ALTER TABLE items ADD CONSTRAINT check_amount CHECK(initial_price BETWEEN 0.00 AND 1000.00);
+
+ALTER TABLE items ADD CONSTRAINT check_amount2 CHECK(sales_price BETWEEN 0.00 AND 1000.00);
+
+ALTER TABLE bids ADD CONSTRAINT check_amount CHECK(amount BETWEEN 0.00 AND 1000.00);
+
+------------
+Question #2
+------------
+
+SELECT name AS "Bids on Items" 
+FROM items 
+WHERE id IN (
+  SELECT item_id FROM bids
+); 
+
+------------
+Question #3
+------------
+
+SELECT name AS "Not Bid On" 
+FROM items 
+WHERE id NOT IN (
+  SELECT item_id FROM bids
+); 
+
+------------
+Question #4
+------------
+
+SELECT name 
+FROM bidders
+WHERE EXISTS (
+  SELECT 1 FROM bids
+  WHERE bids.bidder_id = bidders.id 
+);
+
+--------------------
+Further Exploration
+--------------------
+
+SELECT DISTINCT bidders.name 
+FROM bidders INNER JOIN bids
+ON bids.bidder_id = bidders.id;
+
+------------
+Question #5
+------------
+
+SELECT name AS "Highest Bid Less Than 100 Dollars"
+FROM items
+WHERE id = ANY (
+  SELECT item_id FROM bids 
+  WHERE amount < 100.00
+);
+
+SELECT name AS "Highest Bid Less Than 100 Dollars"
+FROM items 
+WHERE items.id != ALL (
+  SELECT DISTINCT item_id FROM bids 
+  WHERE amount > 100.00
+);
+
+--------------------
+Further Exploration
+--------------------
+
+SELECT name AS "Highest Bid Less Than 100 Dollars"
+FROM items 
+WHERE items.id != ALL (
+  SELECT DISTINCT item_id FROM bids 
+  WHERE amount > 100.00
+)
+AND items.id IN (
+  SELECT item_id FROM bids
+);
+
+------------
+Question #6
+------------
+
+SELECT MAX(total_bids) FROM (SELECT COUNT(bidder_id) AS total_bids FROM bids GROUP BY bidder_id) AS count;
+
+------------
+Question #7
+------------
+
+SELECT name, 
+  COALESCE((SELECT COUNT(item_id) FROM bids 
+    WHERE bids.item_id = items.id
+    GROUP BY item_id), 0) AS count 
+FROM items;
+
+--------------------
+Further Exploration
+--------------------
+
+SELECT items.name, COALESCE(bid_counts.count,0) 
+  AS count
+FROM items 
+  LEFT OUTER JOIN 
+  (SELECT bids.item_id, COUNT(bids.item_id)   
+    FROM bids 
+    GROUP BY bids.item_id) 
+  AS bid_counts
+ON bid_counts.item_id = items.id
+GROUP BY items.name, bid_counts.count;
+
+* Not the same order, but order from the original output does not seem specific.
+------------
+Question #8
+------------
+
+SELECT id FROM items
+WHERE name = 'Painting'
+UNION 
+SELECT id FROM items
+WHERE initial_price = 100.00
+UNION
+SELECT id FROM items
+WHERE sales_price = 250.00;
+
+
+SELECT id FROM items
+WHERE ROW(name, initial_price, sales_price) = ROW('Painting', 100.00, 250.00);
+
+------------
+Question #9
+------------
+
+EXPLAIN SELECT name FROM bidders
+WHERE EXISTS (SELECT 1 FROM bids WHERE bids.bidder_id = bidders.id);                                                    
+--------------------------------------------------------------------------
+ Hash Join  (cost=33.38..62.84 rows=635 width=32)
+   Hash Cond: (bidders.id = bids.bidder_id)
+   ->  Seq Scan on bidders  (cost=0.00..22.70 rows=1270 width=36)
+   ->  Hash  (cost=30.88..30.88 rows=200 width=4)
+         ->  HashAggregate  (cost=28.88..30.88 rows=200 width=4)
+               Group Key: bids.bidder_id
+               ->  Seq Scan on bids  (cost=0.00..25.10 rows=1510 width=4)
+(7 rows)
+
+
+
+EXPLAIN ANALYZE SELECT name FROM bidders
+WHERE EXISTS (SELECT 1 FROM bids WHERE bids.bidder_id = bidders.id);  
+---------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=33.38..62.84 rows=635 width=32) (actual time=0.037..0.039 rows=6 loops=1)
+   Hash Cond: (bidders.id = bids.bidder_id)
+   ->  Seq Scan on bidders  (cost=0.00..22.70 rows=1270 width=36) (actual time=0.009..0.010 rows=7 loops=1)
+   ->  Hash  (cost=30.88..30.88 rows=200 width=4) (actual time=0.021..0.021 rows=6 loops=1)
+         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+         ->  HashAggregate  (cost=28.88..30.88 rows=200 width=4) (actual time=0.018..0.018 rows=6 loops=1)
+               Group Key: bids.bidder_id
+               ->  Seq Scan on bids  (cost=0.00..25.10 rows=1510 width=4) (actual time=0.004..0.008 rows=26 loops=1)
+ Planning time: 0.160 ms
+ Execution time: 0.074 ms
+(10 rows)
+
+
+EXPLAIN ==> Because there are more than one way to run a query, the planner creates a query plan for any given query. EXPLAIN will display this plan.
+EXPLAIN ANALYZE ==> Checks the accuracy of the query plan by actually running it
+
+------------
+Question #10
+------------
+1.
+SELECT MAX(bid_counts.count) FROM
+  (SELECT COUNT(bidder_id) FROM bids GROUP BY bidder_id) AS bid_counts;
+---------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=37.15..37.16 rows=1 width=8) (actual time=0.058..0.059 rows=1 loops=1)
+   ->  HashAggregate  (cost=32.65..34.65 rows=200 width=12) (actual time=0.051..0.055 rows=6 loops=1)
+         Group Key: bids.bidder_id
+         ->  Seq Scan on bids  (cost=0.00..25.10 rows=1510 width=4) (actual time=0.016..0.020 rows=26 loops=1)
+ Planning time: 0.156 ms
+ Execution time: 0.120 ms
+(6 rows)
+
+
+2.
+SELECT COUNT(bidder_id) AS max_bid FROM bids
+  GROUP BY bidder_id
+  ORDER BY max_bid DESC
+  LIMIT 1;
+----------------------------------------------------------------------------------------------------------------
+ Limit  (cost=35.65..35.65 rows=1 width=12) (actual time=0.121..0.122 rows=1 loops=1)
+   ->  Sort  (cost=35.65..36.15 rows=200 width=12) (actual time=0.119..0.119 rows=1 loops=1)
+         Sort Key: (count(bidder_id)) DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         ->  HashAggregate  (cost=32.65..34.65 rows=200 width=12) (actual time=0.047..0.051 rows=6 loops=1)
+               Group Key: bidder_id
+               ->  Seq Scan on bids  (cost=0.00..25.10 rows=1510 width=4) (actual time=0.012..0.016 rows=26 loops=1)
+ Planning time: 0.155 ms
+ Execution time: 0.180 ms
+(9 rows)
+
+
+Interesting. It was estimated that #2 would be more costly if you look at the costs:
+  - #1 Costs    -- 37.15..37.16
+  - #2 Costs    -- 35.65..36.15
+
+Like was stated in a previous exercies, #1 is more efficent. We can see this because the execution time for #1 was less than that of #2 when the SQL statements were run.
+  - #1 Execution Time     0.120 ms        
+  - #2 Execution Time     0.180 ms
+
+--------------------
+Further Exploration
+--------------------
+
+1.
+SELECT items.name, COALESCE(bid_counts.count,0) 
+  AS count
+FROM items 
+  LEFT OUTER JOIN 
+  (SELECT bids.item_id, COUNT(bids.item_id)   
+    FROM bids 
+    GROUP BY bids.item_id) 
+  AS bid_counts
+ON bid_counts.item_id = items.id
+GROUP BY items.name, bid_counts.count;
+-------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=73.60..82.40 rows=880 width=48) (actual time=0.108..0.113 rows=6 loops=1)
+   Group Key: items.name, (count(bids.item_id))
+   ->  Hash Right Join  (cost=62.45..69.20 rows=880 width=40) (actual time=0.085..0.099 rows=6 loops=1)
+         Hash Cond: (bids.item_id = items.id)
+         ->  HashAggregate  (cost=32.65..34.65 rows=200 width=12) (actual time=0.037..0.042 rows=5 loops=1)
+               Group Key: bids.item_id
+               ->  Seq Scan on bids  (cost=0.00..25.10 rows=1510 width=4) (actual time=0.007..0.012 rows=26 loops=1)
+         ->  Hash  (cost=18.80..18.80 rows=880 width=36) (actual time=0.036..0.036 rows=6 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               ->  Seq Scan on items  (cost=0.00..18.80 rows=880 width=36) (actual time=0.017..0.022 rows=6 loops=1)
+ Planning time: 0.279 ms
+ Execution time: 0.220 ms
+(12 rows)
+
+
+
+
+2.
+SELECT name,
+(SELECT COUNT(item_id) FROM bids WHERE item_id = items.id)
+FROM items;
+-------------------------------------------------------------------------------------------------------------
+ Seq Scan on items  (cost=0.00..25455.20 rows=880 width=40) (actual time=0.024..0.057 rows=6 loops=1)
+   SubPlan 1
+     ->  Aggregate  (cost=28.89..28.91 rows=1 width=8) (actual time=0.007..0.007 rows=1 loops=6)
+           ->  Seq Scan on bids  (cost=0.00..28.88 rows=8 width=4) (actual time=0.003..0.004 rows=4 loops=6)
+                 Filter: (item_id = items.id)
+                 Rows Removed by Filter: 22
+ Planning time: 0.104 ms
+ Execution time: 0.084 ms
+(8 rows)
+
+     Execution Time    Planning Time     Total Costs
+#1   0.220 ms          0.279 ms          73.60..82.40
+#2   0.084 ms          0.104 ms          0.00..25455.20

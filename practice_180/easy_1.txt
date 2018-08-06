@@ -1,0 +1,79 @@
+------------
+Question #1
+------------
+
+createdb animals
+
+------------
+Question #2
+------------
+
+CREATE TABLE birds (
+id SERIAL PRIMARY KEY,
+name VARCHAR(25),
+age INTEGER,
+species VARCHAR(15)
+);
+
+------------
+Question #3
+------------
+
+INSERT INTO birds (name, age, species)
+VALUES ('Charlie', 3, 'Finch');
+
+INSERT INTO birds (name, age, species)
+VALUES ('Allie', 5, 'Owl');
+
+INSERT INTO birds (name, age, species)
+VALUES ('Jennifer', 3, 'Magpie');
+
+INSERT INTO birds (name, age, species)
+VALUES ('Jamie', 4, 'Owl');
+
+INSERT INTO birds (name, age, species)
+VALUES ('Roy', 8, 'Crow');
+
+------------
+Question #4
+------------
+
+SELECT * FROM birds;
+
+------------
+Question #5
+------------
+
+SELECT * FROM birds WHERE age < 5;
+
+------------
+Question #6
+------------
+
+UPDATE birds SET species = 'Raven' WHERE species = 'Crow';
+
+------------
+Question #7
+------------
+
+DELETE FROM birds WHERE age = 3 AND species = 'Finch';
+
+------------
+Question #8
+------------
+
+ALTER TABLE birds ADD CHECK (age > 0);
+INSERT INTO birds (name, age, species)
+VALUEs ('Sarah', -2, 'Eagle');
+
+------------
+Question #9
+------------
+
+DROP TABLE birds;
+
+------------
+Question #10
+------------
+
+dropdb animals

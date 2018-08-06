@@ -1,0 +1,66 @@
+------------ 
+Question #1
+------------
+
+SELECT books.id, books.author, STRING_AGG(categories.name, ', ')
+FROM books
+INNER JOIN books_categories ON books_categories.book_id = books.id
+INNER JOIN categories ON books_categories.category_id = categories.id
+GROUP BY author;
+
+------------
+Question #2
+------------
+
+* With the books, categories, and books_categories tables in my database, I need to enter the books and categories data first before the books_categories data. Also...
+
+ALTER TABLE books ALTER COLUMN title TYPE VARCHAR(100);
+
+INSERT INTO books (title, author)
+VALUES ('Sally Ride: America''s First Woman in Space', 'Lynn Sherr');
+INSERT INTO books (title, author)
+VALUES ('Jane Eyre', 'Charlotte Brontë');
+INSERT INTO books (title, author)
+VALUES ('Vij''s: Elegant and Inspired Indian Cuisine', 'Merru Dhalwala and Wikram Vij');
+
+INSERT INTO categories (name)
+VALUES ('Space Exploration');
+INSERT INTO categories (name)
+VALUES ('Cookbook');
+INSERT INTO categories (name)
+VALUES ('South Asia');
+
+INSERT INTO books_categories (book_id, category_id)
+VALUES (5,13);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (5,5);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (5,1);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (6,2);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (6,4);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (7,14);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (7,1);
+INSERT INTO books_categories (book_id, category_id)
+VALUES (7,15);
+
+------------
+Question #3
+------------
+
+ALTER TABLE books_categories ADD CONSTRAINT check_unique_combo UNIQUE(book_id, category_id);
+
+------------
+Question #4
+------------
+
+SELECT name, COUNT(book_id) AS book_count, STRING_AGG(title, ', ') AS book_title 
+FROM categories
+INNER JOIN books_categories ON categories.id = books_categories.category_id
+INNER JOIN books ON books_categories.book_id = books.id
+GROUP BY name
+ORDER BY name;
+
