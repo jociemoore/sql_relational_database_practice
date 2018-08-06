@@ -1,0 +1,16 @@
+------------
+Question #1
+------------
+
+def all_lists
+  @db[:lists].left_join(:todos, list_id: :id).
+    select_all(:lists).
+    select_append do
+      [ count(todos__id).as(todos_count),
+        count(nullif(todos__completed, true)).as(todos_remaining_count) ]
+    end.
+    group(:lists__id).
+    order(:lists__name)
+end
+
+If we replace todos__id with todos.id in the above block of code we get a NoMethodError at /lists (undefined method `id' for #<Sequel::SQL::Identifier @value=>:todos>).
