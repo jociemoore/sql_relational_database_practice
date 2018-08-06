@@ -1,0 +1,78 @@
+------------
+Question #1
+------------
+
+createdb sequel_multiple_tables
+
+------------
+Question #2
+------------
+
+psql -d sequel_multiple_tables < theater_full.sql
+
+------------
+Question #3
+------------
+
+pry 
+require 'sequel'
+
+DB = Sequel.connect("postgres://localhost/sequel_multiple_tables")
+
+------------
+Question #4
+------------
+
+DB[:tickets].count(:id)
+
+------------
+Question #5
+------------
+
+DB[:tickets].group(:customer_id).group_append(:id).count
+
+ANSWER:
+DB[:tickets].distinct(:customer_id).count
+
+------------
+Question #6
+------------
+
+DB[:tickets].select do
+  ((count(:customer_id).distinct.cast(:float)) / 
+  (DB[:customers].select{count(:id).cast(:float)}) * 100).as(:percentage)
+end.first
+
+ANSWER
+DB[:customers].select {
+  (count(tickets__customer_id).distinct / count(customers__id).distinct.cast(Float) * 100).as(:percent)
+}.left_outer_join(:tickets, customer_id: :id).first
+
+------------
+Question #7
+------------
+
+DB[:tickets].join(:events, :id=>:event_id).group_and_count(:name).reverse_order(:count).all
+
+------------
+Question #8
+------------
+
+DB[:customers].join(:tickets, :customer_id=>:id).group_and_count(:customer_id___id, :email).having{count(:event_id) >= 3}.limit(10).all
+
+------------
+Question #9
+------------
+
+DB[:customers].select do
+  [:events__name___event, events__starts_at, :sections__name___section, seats__row, :seats__number___seat]
+end.
+join(:tickets, :customer_id => :id).
+join(:seats, :id => :seat_id).
+join(:sections, :id => :section_id).
+join(:events, :id => Sequel[:tickets][:event_id]).
+where(:email => 'gennaro.rath@mcdermott.co').all
+
+
+
+
