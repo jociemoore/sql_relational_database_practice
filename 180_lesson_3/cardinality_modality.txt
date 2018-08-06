@@ -1,0 +1,23 @@
+------------
+Question #1
+------------
+
+Cardinality is the number of objects on each side of the relationship in an entity-relationship model.
+
+------------
+Question #2
+------------
+
+Modality tells us if the relationship is required (1) or optional (0) in an entity-relationship model.
+
+------------
+Question #3
+------------
+
+If one side of a relationship has a modality of 1, it is required and there has to be at least 1 instance.
+
+------------
+Question #4
+------------
+
+Crow's Foot Notation is the notation used at Launch School.

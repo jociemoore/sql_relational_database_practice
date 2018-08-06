@@ -1,0 +1,72 @@
+------------
+Question #1
+------------
+
+createdb theater
+
+psql -d theater
+
+\i ~/launch_school/course_180/relational_data/theater_full.sql
+
+------------
+Question #2
+------------
+
+SELECT COUNT(id) FROM tickets;
+
+------------
+Question #3
+------------
+
+SELECT COUNT(DISTINCT customer_id) FROM tickets;
+
+------------
+Question #4
+------------
+
+
+SELECT round(round(
+(SELECT COUNT(DISTINCT customer_id) FROM tickets) / 
+((SELECT COUNT(*) FROM customers)::numeric)
+, 4) * 100, 2) AS percent;
+
+OR 
+
+SELECT COUNT(DISTINCT tickets.customer_id) / COUNT(DISTINCT customers.id)::float * 100 AS PERCENT 
+FROM customers
+LEFT OUTER JOIN tickets ON tickets.customer_id = customers.id;
+
+------------
+Question #5
+------------
+
+SELECT events.name, COUNT(*) AS popularity 
+FROM tickets 
+RIGHT OUTER JOIN events ON events.id = tickets.event_id 
+GROUP BY events.name 
+ORDER BY popularity DESC;
+
+------------
+Question #6
+------------
+
+SELECT t.customer_id AS id, c.email, COUNT(DISTINCT t.event_id)
+FROM customers AS c
+INNER JOIN tickets AS t
+ON t.customer_id = c.id
+GROUP BY c.email, t.customer_id 
+HAVING COUNT(DISTINCT t.event_id) = 3
+ORDER BY id;
+
+------------
+Question #7
+------------
+
+SELECT events.name AS event, events.starts_at, sections.name AS section, seats.row, seats.number AS seat 
+FROM events
+INNER JOIN tickets ON events.id = tickets.event_id
+INNER JOIN customers ON customers.id = tickets.customer_id
+INNER JOIN seats ON tickets.seat_id = seats.id
+INNER JOIN sections ON seats.section_id = sections.id
+WHERE customers.email = 'gennaro.rath@mcdermott.co';
+
