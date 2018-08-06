@@ -1,0 +1,5 @@
+----------
+Question 1
+----------
+
+The issue with apostophes in the user input is that the memo value will not be formatted correctly to be inserted into the SQL database. "Gas for Karen's Car" needs to be 'Gas for Karen''s Car'.

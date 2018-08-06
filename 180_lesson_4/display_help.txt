@@ -1,0 +1,5 @@
+----------
+Question 1
+----------
+
+Line 20, puts <<~HELP, is the beginning of the HEREDOC syntax. HEREDOC is used for multi-line strings in Ruby. The ~ is new as of Ruby 2.3 and it strips the white space leading; I used - instead because I am running Ruby 2.2.0. The puts method outputs this string to the terminal.
