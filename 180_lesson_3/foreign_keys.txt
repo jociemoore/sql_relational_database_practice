@@ -1,0 +1,98 @@
+------------
+Question #1
+------------
+
+createdb orders
+
+psql -d orders < orders_products1.sql
+
+psql -d orders
+
+------------
+Question #2
+------------
+
+INSERT INTO products (name) 
+VALUES ('small bolt');
+
+INSERT INTO products (name) 
+VALUES ('large bolt');
+
+INSERT INTO orders (product_id, quantity)
+VALUES (1, 10);
+
+INSERT INTO orders (product_id, quantity)
+VALUES (1, 25);
+
+INSERT INTO orders (product_id, quantity)
+VALUES (2, 15);
+
+------------
+Question #3
+------------
+
+SELECT orders.quantity, products.name FROM products INNER JOIN orders ON orders.product_id = products.id; 
+
+------------
+Question #4
+------------
+
+Yes, because the product_id column does not have a NOT NULL constraint.
+
+\d orders
+
+=>
+                           Table "public.orders"
+   Column   |  Type   |                      Modifiers                      
+------------+---------+-----------------------------------------------------
+ id         | integer | not null default nextval('orderd_id_seq'::regclass)
+ product_id | integer | 
+ quantity   | integer | not null
+Indexes:
+    "orderd_pkey" PRIMARY KEY, btree (id)
+
+------------
+Question #5
+------------
+
+ALTER TABLE orders ALTER COLUMN product_id SET NOT NULL;
+INSERT INTO orders (quantity) VALUES (60);
+
+ERROR:  null value in column "product_id" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 60).
+
+------------
+Question #6
+------------
+
+Not Applicable; Had ran INSERT INTO orders (quantity) VALUES (60); before altering the column constraints, I would have to DELETE FROM orders WHERE quantity = 60; and then ALTER TABLE orders ALTER COLUMN product_id SET NOT NULL;.
+
+------------
+Question #7
+------------
+
+CREATE TABLE reviews (
+  id SERIAL,
+  product_id INTEGER REFERENCES products(id),
+  body TEXT NOT NULL,
+  PRIMARY KEY (id)
+);
+
+------------
+Question #8
+------------
+
+INSERT INTO reviews (product_id, body)
+VALUES (4, 'a little small');
+
+INSERT INTO reviews (product_id, body)
+VALUES (4, 'very round!');
+
+INSERT INTO reviews (product_id, body)
+VALUES (4, 'could have been smaller');
+
+------------
+Question #9
+------------
+
+False, foreign key constraint do NOT prevent NULL values.
