@@ -1,0 +1,28 @@
+------------
+Question #1
+------------
+
+CREATE TABLE lists (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE todos (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  list_id INTEGER NOT NULL REFERENCES lists(id),
+  completed BOOLEAN DEFAULT false
+);
+
+------------
+Question #2
+------------
+
+N/A
+
+------------
+Question #3
+------------
+
+createdb todos
+psql -d todos < schema.sql
