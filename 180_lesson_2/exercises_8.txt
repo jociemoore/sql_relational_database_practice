@@ -1,0 +1,61 @@
+------------
+Question #1
+------------
+
+CREATE SEQUENCE counter;
+
+------------
+Question #2
+------------
+
+SELECT nextval('counter');
+
+------------
+Question #3
+------------
+
+DROP SEQUENCE counter;
+
+------------
+Question #4
+------------
+
+Yes, it is possible to create a sequence that only returns even numbers. CREATE SEQUENCE counter INCREMENT 2 MINVALUE 2;
+
+------------
+Question #5
+------------
+
+CREATE TABLE regions (id serial PRIMARY KEY, name text, area integer);
+
+The name of the sequence in the above SQL statement is 'regions_id_seq'.
+
+------------
+Question #6
+------------
+
+ALTER TABLE films ADD COLUMN id SERIAL PRIMARY KEY;
+
+------------
+Question #7
+------------
+
+ERROR: duplicate key value violates unique constraint "films_pkey"
+DETAIL: Key (id)=(5) already exists.
+
+------------
+Question #8
+------------
+
+ERROR: multiple primary keys for table "films" are not allowed
+
+------------
+Question #9
+------------
+
+ALTER TABLE films DROP CONSTRAINT films_pk;
+
+
+
+
+

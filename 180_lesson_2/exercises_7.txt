@@ -1,0 +1,138 @@
+------------
+Question #1
+------------
+
+\i ~/launch_school/course_180/schema_data_sql/films2.sql
+
+------------
+Question #2
+------------
+
+ALTER TABLE films ALTER COLUMN title SET NOT NULL;
+ALTER TABLE films ALTER COLUMN year SET NOT NULL;
+ALTER TABLE films ALTER COLUMN genre SET NOT NULL;
+ALTER TABLE films ALTER COLUMN director SET NOT NULL;
+ALTER TABLE films ALTER COLUMN duration SET NOT NULL;
+
+------------
+Question #3
+------------
+
+By modifying a column to be NOT NULL will add NOT NULL to the list of modifiers you see when you \d films.
+
+------------
+Question #4
+------------
+
+ALTER TABLE films ADD CONSTRAINT title_unique UNIQUE (title);
+
+------------
+Question #5
+------------
+
+The constraint added in #4 shows up the \d films table as an index -- > "title_unique" UNIQUE CONSTRAINT, btree (title)
+
+------------
+Question #6
+------------
+
+ALTER TABLE films DROP CONSTRAINT title_unique;
+
+------------
+Question #7
+------------
+
+ALTER TABLE films ADD CONSTRAINT check_length CHECK (char_length(title) >= 1);
+
+------------
+Question #8
+------------
+
+INSERT INTO films VALUES ('', 1999, 'sci-fi', 'peter jackson', 180)
+
+ERROR: new row relation "films" violates check constraint "check_length"
+DETAIL: Failing row contains (, 1999, sci-fi, peter jackson, 180).
+
+------------
+Question #9
+------------
+
+As a "Check constraint"
+"check_length" CHECK (char_length(title::text) >= 1)
+
+------------
+Question #10
+------------
+
+ALTER TABLE films DROP CONSTRAINT check_length;
+
+------------
+Question #11
+------------
+
+ALTER TABLE films ADD CONSTRAINT check_range CHECK (year > 1900 AND year < 2100); 
+
+------------
+Question #12
+------------
+
+As a "check constraint"
+"check_range" CHECK (year > 1900 AND year < 2100)
+
+------------
+Question #13
+------------
+
+ALTER TABLE films ADD CONSTRAINT check_director CHECK (char_length(director) >= 3 AND director LIKE '% %');
+
+position(' ' in director > 0)
+
+------------
+Question #14
+------------
+
+As a "check constraint"
+"check_director" CHECK (char_length(director::text) >= 3 AND director::text ~~ '% %'::text)
+
+------------
+Question #15
+------------
+
+UPDATE films SET director = 'Johhny' WHERE year = 1988;
+ERROR: new row for relation "films" violates check constraint "check_director"
+DETIAL: Failing row contains (Die Hard, 1988, action, Johnny, 132).
+
+------------
+Question #16
+------------
+
+1. Datatype
+2. Modifiers like NOT NULL
+3. Constraints like CHECK
+
+------------
+Question #17
+------------
+
+Yes, it is possible to set a default value that will be considered invalid by a constraint, but it will trigger the Error message each time psql attempts toe use it.
+
+CREATE TABLE movie_theaters (
+  title VARCHAR(5) NOT NULL,
+  distance INTEGER
+);
+
+ALTER TABLE movie_theaters ADD CONSTRAINT check_distance CHECK (distance >= 0);
+
+ALTER TABLE movie_theaters ALTER COLUMN distance SET DEFAULT -5;
+
+INSERT INTO movie_theaters
+VALUES ('Regal');
+
+ERROR:  new row for relation "movie_theaters" violates check constraint "check_distance"
+DETAIL:  Failing row contains (Regal, -15).
+
+------------
+Question #18
+------------
+
+\d table_name

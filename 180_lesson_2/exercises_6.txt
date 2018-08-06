@@ -1,0 +1,75 @@
+------------
+Question #1
+------------
+
+NULL (which means unknown)
+
+------------
+Question #2
+------------
+
+ALTER TABLE employees ALTER COLUMN department SET DEFAULT 'unassigned';
+
+UPDATE employees SET department = 'unassigned' WHERE first_name = 'Haiden';
+
+ALTER TABLE employees ALTER COLUMN department SET NOT NULL;
+
+------------
+Question #3
+------------
+
+CREATE TABLE temperatures (
+  date DATE NOT NULL, 
+  low INTEGER NOT NULL,
+  high INTEGER NOT NULL
+);
+
+------------
+Question #4
+------------
+
+INSERT INTO VALUES ('2016-03-01', 34, 43);
+
+------------
+Question #5
+------------
+
+SELECT date, (high + low)/2 AS average FROM temperatures WHERE EXTRACT(day FROM date) >= 2 AND EXTRACT(day FROM date) <= 8;
+
+------------
+Question #6
+------------
+
+ALTER TABLE temperatures ADD COLUMN rainfall INTEGER DEFAULT 0;
+
+------------
+Question #7
+------------
+
+UPDATE temperatures SET rainfall = ((high + low)/2) - 35 WHERE ((high + low)/2) > 35;
+
+------------
+Question #8
+------------
+
+ALTER TABLE temperatures ALTER COLUMN rainfall TYPE NUMERIC(5,3);
+
+UPDATE temperatures SET rainfall = rainfall / 25.4;
+
+------------
+Question #9
+------------
+
+ALTER TABLE temperatures RENAME TO weather;
+
+------------
+Question #10
+------------
+
+\d weather
+
+------------
+Question #11
+------------
+
+pg_dump -d my_company -t weather --inserts > weather.sql
