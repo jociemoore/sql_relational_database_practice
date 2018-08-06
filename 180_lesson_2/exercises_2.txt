@@ -1,0 +1,41 @@
+------------
+Question #1
+------------
+
+VARCHAR(length) and TEXT are both character data types however VARCHAR is limited by the length given up to 255 characters (although can be shorter than the given length) and TEXT is UNLIMITED in length.
+
+------------
+Question #2
+------------
+
+INTEGER, DECIMAL, and REAL are all numeric data types. An INTEGER is a whole number. A DECIMAL is an arbitrary and limited precsion number. And REAL data is a floating point number. 
+
+------------
+Question #3
+------------
+
+The largest number an INTEGER can hold is 2147483647.
+
+------------
+Question #4
+------------
+
+TIMESTAMP and DATE are both Date and Time data types. A TIMESTAMP includes both the date and the time whereas DATE just includes the date.
+
+------------
+Question #5
+------------
+
+TIMESTAMP  is equal to 'timestamp without time zone' and cannot include time zone.
+
+TIMESTAMPTZ is equal to 'timestamp with time zone' and can include time zone.
+
+Example time zones:
+- PST
+- America/New York
+- PST8PDT
+- -8:00
+- -800
+- -8
+- zulu
+- z

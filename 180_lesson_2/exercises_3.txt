@@ -1,0 +1,126 @@
+WORKING WITH A SINGLE TABLE 
+
+------------
+Question #1
+------------
+
+CREATE TABLE people (
+  name VARCHAR(30) NOT NULL,
+  age INTEGER NOT NULL CHECK (age > 0),
+  occupation VARCHAR(30)
+);
+
+------------
+Question #2
+------------
+
+INSERT INTO people 
+VALUES ('Abby', 34, 'biologist');
+
+INSERT INTO people 
+VALUES ('Mu''nisah', 26);
+
+INSERT INTO people (name, age, occupation)
+VALUES ('Mirabelle', 40, 'contractor');
+
+------------
+Question #3
+------------
+
+SELECT * FROM people WHERE name = 'Mu''nisah';
+SELECT * FROM people WHERE age = 26;
+SELECT * FROM people WHERE occupation IS NULL;
+
+------------
+Question #4
+------------
+
+CREATE TABLE birds (
+  name VARCHAR(50),
+  length DECIMAL(3,1),
+  wingspan DECIMAL(3,1),
+  family VARCHAR(50),
+  extinct BOOLEAN 
+);
+
+OR 
+
+CREATE TABLE birds (
+    name character varying(255),
+    length numeric(4,1),
+    wingspan numeric(4,1),
+    family text,
+    extinct boolean
+);
+
+
+------------
+Question #5
+------------
+
+INSERT INTO birds
+VALUES ('Spotted Towhee', 21.6 ,  26.7, 'Emberizidae', false);
+
+INSERT INTO birds
+VALUES ('American Robin', 25.5, 36.0, 'Turidae', false);
+
+INSERT INTO birds
+VALUES ('Greater Koa Finch', 19.0, 24.0, 'Fringillidae', true);
+
+INSERT INTO birds
+VALUES ('Carolina Parakeet', 33.0, 55.8, 'Psittacidae', true);
+
+INSERT INTO birds
+VALUES ('Common Kestrel', 35.5, 73.5, 'Falconidae', false);
+
+------------
+Question #6
+------------
+
+SELECT name, family FROM birds WHERE extinct = false ORDER BY length DESC; 
+
+------------
+Question #7
+------------
+
+SELECT AVG(wingspan), MIN(wingspan), MAX(wingspan) FROM birds; 
+
+------------
+Question #8
+------------
+
+CREATE TABLE menu_items (
+  item VARCHAR(25) NOT NULL,
+  prep_time INTEGER CHECK (prep_time > 0),
+  ingredient_cost NUMERIC(4,2),
+  sales INTEGER,
+  menu_price NUMERIC(4,2)
+);
+
+------------
+Question #9
+------------
+
+INSERT INTO menu_items
+VALUES ('omelette', 10, 1.50, 182, 7.99);
+
+INSERT INTO menu_items
+VALUES ('tacos', 5, 2.00, 254, 8.99);
+
+INSERT INTO menu_items
+VALUES ('oatmeal', 1, 0.50, 79, 5.99);
+
+------------
+Question #10
+------------
+
+SELECT item, (menu_price - ingredient_cost) AS most_profitable FROM menu_items GROUP BY item, most_profitable ORDER BY most_profitable DESC LIMIT 1; 
+
+------------
+Question #11
+------------
+
+SELECT item, menu_price, ingredient_cost, (SELECT round(prep_time * (13.00/60.00), 2) AS labor), (SELECT menu_price - (round(prep_time * (13.00/60.00), 2) + ingredient_cost)
+AS profit)
+FROM menu_items
+ORDER BY profit DESC;
