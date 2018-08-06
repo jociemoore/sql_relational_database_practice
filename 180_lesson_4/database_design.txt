@@ -1,0 +1,29 @@
+------------
+Question #1
+------------
+
+9999.99
+
+\d expense
+ amount     | numeric(6,2) | not null
+ 6 --> means that the amount value can not have more than 6 digits 
+ 2 --> means that the amount value will have 2 decimal points
+
+------------
+Question #2
+------------
+
+-9999.99
+
+INSERT INTO expenses (amount, memo, created_on)
+VALUES (-9999.99, 'min amount', NOW());
+
+INSERT INTO expenses (amount, memo, created_on)
+VALUES (-10000.00, 'too small', NOW());
+
+------------
+Question #3
+------------
+
+ALTER TABLE expenses ADD CONSTRAINT check_positive_amount CHECK (amount > 0.00);
+
