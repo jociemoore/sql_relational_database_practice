@@ -1,0 +1,136 @@
+------------
+Question #1
+------------
+
+createdb workshop
+psql -d workshop
+
+CREATE TABLE devices (
+id SERIAL PRIMARY KEY,
+name VARCHAR(100) NOT NULL,
+created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE TABLE parts (
+id SERIAL PRIMARY KEY,
+part_number INTEGER UNIQUE NOT NULL,
+device_id INTEGER REFERENCES devices(id)
+);
+
+------------
+Question #2
+------------
+
+INSERT INTO devices (name) 
+VALUES ('Accelerometer');
+
+INSERT INTO devices (name) 
+VALUES ('Gyroscope');
+
+INSERT INTO parts (part_number, device_id)
+VALUES (10, 1);
+INSERT INTO parts (part_number, device_id)
+VALUES (20, 1);
+INSERT INTO parts (part_number, device_id)
+VALUES (30, 1);
+
+INSERT INTO parts (part_number, device_id)
+VALUES (100, 2);
+INSERT INTO parts (part_number, device_id)
+VALUES (200, 2);
+INSERT INTO parts (part_number, device_id)
+VALUES (300, 2);
+INSERT INTO parts (part_number, device_id)
+VALUES (400, 2);
+INSERT INTO parts (part_number, device_id)
+VALUES (500, 2);
+
+
+INSERT INTO parts (part_number)
+VALUES (111);
+INSERT INTO parts (part_number)
+VALUES (222);
+INSERT INTO parts (part_number)
+VALUES (333);
+
+------------
+Question #3
+------------
+
+SELECT devices.name, parts.part_number FROM parts INNER JOIN devices ON devices.id = parts.device_id;
+
+------------
+Question #4
+------------
+
+SELECT * FROM parts WHERE part_number::text LIKE '3%';
+
+------------
+Question #5
+------------
+
+SELECT devices.name, COUNT(parts.id) FROM parts INNER JOIN devices ON devices.id = parts.device_id GROUP BY devices.name;
+
+------------
+Question #6
+------------
+
+SELECT devices.name AS name, COUNT(parts.device_id) 
+FROM devices
+JOIN parts ON devices.id = parts.device_id 
+GROUP BY devices.name
+ORDER BY devices.name ASC;
+
+------------
+Question #7
+------------
+
+SELECT part_number, device_id FROM parts WHERE device_id IS NOT NULL;
+
+SELECT part_number, device_id FROM parts WHERE device_id IS NULL;
+
+------------
+Question #8
+------------
+
+SELECT name AS oldest_device FROM devices WHERE age(created_at) > age(NOW()) ORDER BY age(created_at) DESC LIMIT 1;
+
+OR 
+
+SELECT name AS oldest_device
+ FROM devices
+ORDER BY created_at ASC
+LIMIT 1;
+
+
+------------
+Question #9
+------------
+
+UPDATE parts SET device_id = 1 WHERE part_number = 500;
+UPDATE parts SET device_id = 1 WHERE part_number = 400;
+
+--------------------
+Further Exploration
+--------------------
+UPDATE parts SET device_id = 2 WHERE part_number = (SELECT part_number FROM parts ORDER BY part_number LIMIT 1);
+
+------------
+Question #10
+------------
+
+DELETE FROM parts 
+WHERE device_id = 1;
+
+DELETE FROM devices
+WHERE name = 'Accelerometer';
+
+--------------------
+Further Exploration
+--------------------
+
+In order to delete all in one go, first, one should add the following constraint to the attribute list when building the schema for the devices table: ON DELETE CASCADE.
+
+Then, to delete a device and all its parts, one can run this:
+DELETE FROM devices 
+WHERE name = 'Accelerometer';
